@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>字符动画</title>
+    <style>
+      body {
+        display: flex;
+      }
+      video,
+      canvas {
+        border: 1px solid;
+      }
+    </style>
+  </head>
+  <body>
+    <video
+      id="video"
+      width="200"
+      loop
+      crossorigin="anonymous"
+      src="https://vd4.bdstatic.com/mda-ndq7vt4u19zm2r3m/sc/cae_h264_delogo/1650867435548047241/mda-ndq7vt4u19zm2r3m.mp4?v_from_s=hkapp-haokan-nanjing&auth_key=1666968712-0-0-dcf70a01c09dcd5778829ff612aa09fd&bcevod_channel=searchbox_feed&cd=0&pd=1&pt=3&logid=1312173429&vid=11053683304222357828&abtest=104959_1-105227_1&klogid=1312173429"
+    ></video>
+    <canvas id="cvs"></canvas>
+    <canvas id="cvs2" onclick="video.play()"></canvas>
+  </body>
+  <script>
+    const init = () => {
+      const ctx = cvs.getContext("2d");
+      const ctx2 = cvs2.getContext("2d");
+      cvs.width = cvs2.width = video.offsetWidth;
+      cvs.height = cvs2.height = video.offsetHeight;
+      const playVideo = () => {
+        requestAnimationFrame(playVideo);
+        const { width, height } = cvs;
+        ctx.drawImage(video, 0, 0, width, height);
+        const data = ctx.getImageData(0, 0, width, height).data;
+        ctx2.clearRect(0, 0, width, height);
+        const bl = 8; // 稀释比例
+        ctx2.font = "12px serif";
+        for (let i = 0; i < data.length; i += 4 * bl) {
+          const x = parseInt(((i + 1) % (width * 4)) / 4);
+          const y = parseInt(i / (width * 4));
+          if (x % bl === 0 && y % bl === 0) {
+            const g = parseInt(data[i] + data[i + 1] + data[i + 2] / 1.5);
+            ctx2.fillStyle = `rgba(${g}, ${g}, ${g}, ${data[i + 3]})`;
+            ctx2.fillText("6", x, y);
+          }
+        }
+      };
+      playVideo();
+    };
+
+    init();
+  </script>
+</html>
